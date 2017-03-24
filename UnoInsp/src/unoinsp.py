@@ -50,8 +50,8 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         self.lst_output.append("</tt></body></html>")  # 等速フォントのタグを閉じる。
         with open('workfile.html', 'w', encoding='UTF-8') as f:  # htmlファイルをUTF-8で作成。すでにあるときは上書き。
             f.writelines(self.lst_output)  # シークエンスデータをファイルに書き出し。
-        import webbrowser
-        webbrowser.open_new_tab(f.name)  # デフォルトのブラウザの新しいタブでhtmlファイルを開く。
+            import webbrowser
+            webbrowser.open_new_tab(f.name)  # デフォルトのブラウザの新しいタブでhtmlファイルを開く。
     def _init(self, lst_supr):  # 初期化関数。出力を抑制するインターフェイス名のリストを引数とする。
 #         self.st_omi = ST_OMI.copy()  # 結果を出力しないインターフェイス名の集合の初期化。
         self.lst_output = list()  # 出力行を収納するリストを初期化。
