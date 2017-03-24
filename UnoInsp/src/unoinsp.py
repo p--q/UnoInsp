@@ -53,7 +53,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         import webbrowser
         webbrowser.open_new_tab(f.name)  # デフォルトのブラウザの新しいタブでhtmlファイルを開く。
     def _init(self, lst_supr):  # 初期化関数。出力を抑制するインターフェイス名のリストを引数とする。
-        self.st_omi = ST_OMI.copy()  # 結果を出力しないインターフェイス名の集合の初期化。
+#         self.st_omi = ST_OMI.copy()  # 結果を出力しないインターフェイス名の集合の初期化。
         self.lst_output = list()  # 出力行を収納するリストを初期化。
         if lst_supr:  # 第2引数があるとき
             if isinstance(lst_supr, list):  # lst_suprがリストのとき
@@ -61,7 +61,8 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                 if "core" in st_supr:  # coreというキーワードがあるときはST_OMIの要素に置換する。
                     st_supr.remove("core")
                     st_supr.update(ST_OMI)
-                self.st_omi = st_supr.symmetric_difference(ST_OMI)  # lst_suprとST_OMIに共通しない要素を取得。
+#                 self.st_omi = st_supr.symmetric_difference(ST_OMI)  # デフォルトでcoreインターフェースを出力しないとき。lst_suprとST_OMIに共通しない要素を取得。
+                self.st_omi = st_supr  # デフォルトですべて出力するとき。
             else:  # 引数がリスト以外のとき
                 self.lst_output.append("第2引数はIDLインターフェイス名のリストで指定してください。")
         self.stack = list()  # スタックを初期化。

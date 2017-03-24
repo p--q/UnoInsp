@@ -5,8 +5,8 @@ def macro():
     zf = ctx.getServiceManager().createInstanceWithContext("com.sun.star.packages.zip.ZipFileAccess", ctx)
     import unoinsp
     ins = unoinsp.ObjInsp(XSCRIPTCONTEXT)
+#     ins.tree(zf,["core"])
     ins.tree(zf)
-    
     
 if __name__ == "__main__":
     import sys
