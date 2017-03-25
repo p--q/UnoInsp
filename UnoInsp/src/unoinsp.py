@@ -1,5 +1,16 @@
 #!/opt/libreoffice5.2/program/python
 # -*- coding: utf-8 -*-
+import gettext
+import os
+import sys
+if sys.platform.startswith('win'):  # Windowsの場合。
+    import locale
+    if os.getenv('LANG') is None:  # 環境変数LANGがない場合
+        lang, enc = locale.getdefaultlocale()  # これで日本語の場合('ja_JP', 'cp932')が返る。
+        os.environ['LANG'] = lang  # LANGにja_JPを代入。
+lodir = os.path.join(os.path.abspath(os.path.dirname(__file__)),"locale")  # このスクリプトと同じファルダにあるlocaleフォルダの絶対パスを取得。
+t = gettext.translation("unoinsp",lodir,fallback=True)  # Translations インスタンスを取得。
+_ = t.gettext  # _にt.gettext関数を代入。
 import re #正規表現モジュール。
 import platform  # OS名の取得に使用。
 from com.sun.star.uno.TypeClass import SERVICE, INTERFACE, PROPERTY, INTERFACE_METHOD, INTERFACE_ATTRIBUTE

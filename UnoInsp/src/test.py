@@ -6,8 +6,8 @@ def macro():
     import unoinsp
     ins = unoinsp.ObjInsp(XSCRIPTCONTEXT)
 #     ins.tree(zf,["core"])  # coreインテーフェイスを出力しない。
-#     ins.tree(zf)
-    ins.wtree(zf)
+    ins.tree(zf)
+#     ins.wtree(zf)
     
     
     
