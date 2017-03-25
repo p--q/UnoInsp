@@ -64,7 +64,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
 #                 self.st_omi = st_supr.symmetric_difference(ST_OMI)  # デフォルトでcoreインターフェースを出力しないとき。lst_suprとST_OMIに共通しない要素を取得。
                 self.st_omi = st_supr  # デフォルトですべて出力するとき。
             else:  # 引数がリスト以外のとき
-                self.lst_output.append("第2引数はIDLインターフェイス名のリストで指定してください。")
+                self.lst_output.append(_("第2引数はIDLインターフェイス名のリストで指定してください。"))
         self.stack = list()  # スタックを初期化。
     def _output_setting(self):  # IDL名にリンクをつけて出力するための設定。
         self.dic_fn = dict(zip(LST_KEY, [self._fn for i in range(len(LST_KEY))]))  # 一旦すべての値をself._fnにする。
@@ -123,7 +123,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
             self.stack = [self.tdm.getByHierarchicalName(i if not i[0] == "." else CSS + i) for i in lst_si]  # TypeDescriptionオブジェクトに変換。CSSが必要。
             self._make_tree(flag)
         if not (hasattr(obj, "getSupportedServiceNames") or hasattr(obj, "getTypes")):  # サポートするサービスやインターフェイスがないとき。
-            self.lst_output.append("サポートするサービスやインターフェイスがありません。")
+            self.lst_output.append(_("サポートするサービスやインターフェイスがありません。"))
     def _ext_desc_idl(self, idl):  # objがIDL名のとき。
         if idl[0] == ".":  # 先頭が.で始まっているとき
             idl = CSS + idl  # com.sun.starが省略されていると考えて、com.sun.starを追加する。
@@ -135,9 +135,9 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                 self.stack = [j]  # TypeDescriptionオブジェクトをスタックに取得
                 self._make_tree(flag=False)
             else:  # サービスかインターフェイス以外のときは未対応。
-                self.lst_output.append(idl + "はサービス名またはインターフェイス名ではないので未対応です。")
+                self.lst_output.append(idl + _("はサービス名またはインターフェイス名ではないので未対応です。"))
         else:  # TypeDescriptionオブジェクトを取得できなかったとき。
-            self.lst_output.append(idl + "はIDL名ではありません。")
+            self.lst_output.append(idl + _("はIDL名ではありません。"))
     def _idl_check(self, idl): # IDL名からTypeDescriptionオブジェクトを取得。
             try:
                 j = self.tdm.getByHierarchicalName(idl)  # IDL名からTypeDescriptionオブジェクトを取得。
