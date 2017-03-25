@@ -1,5 +1,16 @@
 #!/opt/libreoffice5.2/program/python
 # -*- coding: utf-8 -*-
+import gettext
+import os
+import sys
+if sys.platform.startswith('win'):  # Windowsの場合。
+    import locale
+    if os.getenv('LANG') is None:  # 環境変数LANGがない場合
+        lang, enc = locale.getdefaultlocale()  # これで日本語の場合('ja_JP', 'cp932')が返る。
+        os.environ['LANG'] = lang  # LANGにja_JPを代入。
+lodir = os.path.join(os.path.abspath(os.path.dirname(__file__)),"locale")  # このスクリプトと同じファルダにあるlocaleフォルダの絶対パスを取得。
+t = gettext.translation("unoinsp",lodir,fallback=True)  # Translations インスタンスを取得。
+_ = t.gettext  # _にt.gettext関数を代入。
 import re #正規表現モジュール。
 import platform  # OS名の取得に使用。
 from com.sun.star.uno.TypeClass import SERVICE, INTERFACE, PROPERTY, INTERFACE_METHOD, INTERFACE_ATTRIBUTE
@@ -50,10 +61,10 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         self.lst_output.append("</tt></body></html>")  # 等速フォントのタグを閉じる。
         with open('workfile.html', 'w', encoding='UTF-8') as f:  # htmlファイルをUTF-8で作成。すでにあるときは上書き。
             f.writelines(self.lst_output)  # シークエンスデータをファイルに書き出し。
-        import webbrowser
-        webbrowser.open_new_tab(f.name)  # デフォルトのブラウザの新しいタブでhtmlファイルを開く。
+            import webbrowser
+            webbrowser.open_new_tab(f.name)  # デフォルトのブラウザの新しいタブでhtmlファイルを開く。
     def _init(self, lst_supr):  # 初期化関数。出力を抑制するインターフェイス名のリストを引数とする。
-        self.st_omi = ST_OMI.copy()  # 結果を出力しないインターフェイス名の集合の初期化。
+#         self.st_omi = ST_OMI.copy()  # 結果を出力しないインターフェイス名の集合の初期化。
         self.lst_output = list()  # 出力行を収納するリストを初期化。
         if lst_supr:  # 第2引数があるとき
             if isinstance(lst_supr, list):  # lst_suprがリストのとき
@@ -61,9 +72,10 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                 if "core" in st_supr:  # coreというキーワードがあるときはST_OMIの要素に置換する。
                     st_supr.remove("core")
                     st_supr.update(ST_OMI)
-                self.st_omi = st_supr.symmetric_difference(ST_OMI)  # lst_suprとST_OMIに共通しない要素を取得。
+#                 self.st_omi = st_supr.symmetric_difference(ST_OMI)  # デフォルトでcoreインターフェースを出力しないとき。lst_suprとST_OMIに共通しない要素を取得。
+                self.st_omi = st_supr  # デフォルトですべて出力するとき。
             else:  # 引数がリスト以外のとき
-                self.lst_output.append("第2引数はIDLインターフェイス名のリストで指定してください。")
+                self.lst_output.append(_("The second argument should be specified as a list of IDL interface names."))  # 第2引数はIDLインターフェイス名のリストで指定してください。
         self.stack = list()  # スタックを初期化。
     def _output_setting(self):  # IDL名にリンクをつけて出力するための設定。
         self.dic_fn = dict(zip(LST_KEY, [self._fn for i in range(len(LST_KEY))]))  # 一旦すべての値をself._fnにする。
@@ -122,7 +134,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
             self.stack = [self.tdm.getByHierarchicalName(i if not i[0] == "." else CSS + i) for i in lst_si]  # TypeDescriptionオブジェクトに変換。CSSが必要。
             self._make_tree(flag)
         if not (hasattr(obj, "getSupportedServiceNames") or hasattr(obj, "getTypes")):  # サポートするサービスやインターフェイスがないとき。
-            self.lst_output.append("サポートするサービスやインターフェイスがありません。")
+            self.lst_output.append(_("There is no service or interface to support."))  # サポートするサービスやインターフェイスがありません。
     def _ext_desc_idl(self, idl):  # objがIDL名のとき。
         if idl[0] == ".":  # 先頭が.で始まっているとき
             idl = CSS + idl  # com.sun.starが省略されていると考えて、com.sun.starを追加する。
@@ -134,9 +146,9 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                 self.stack = [j]  # TypeDescriptionオブジェクトをスタックに取得
                 self._make_tree(flag=False)
             else:  # サービスかインターフェイス以外のときは未対応。
-                self.lst_output.append(idl + "はサービス名またはインターフェイス名ではないので未対応です。")
+                self.lst_output.append(idl + _(" is not a service name or an interface name, so it is not supported yet."))  # はサービス名またはインターフェイス名ではないので未対応です。
         else:  # TypeDescriptionオブジェクトを取得できなかったとき。
-            self.lst_output.append(idl + "はIDL名ではありません。")
+            self.lst_output.append(idl + _(" is not an IDL name."))  # はIDL名ではありません。
     def _idl_check(self, idl): # IDL名からTypeDescriptionオブジェクトを取得。
             try:
                 j = self.tdm.getByHierarchicalName(idl)  # IDL名からTypeDescriptionオブジェクトを取得。
