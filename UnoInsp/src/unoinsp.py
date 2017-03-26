@@ -37,6 +37,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
             self._ext_desc_idl(obj)
         else:  # objが文字列以外の時
             self._ext_desc(obj)
+        self._removeBranch(" ")  # 不要な枝を削除。
         print("\n".join(self.lst_output))
     def itree(self, obj, lst_supr=None):  # アンカータグをつけて出力。IPython Notebookでの使用を想定
         self._init(lst_supr)  # 初期化関数
@@ -46,6 +47,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
             self._ext_desc_idl(obj)
         else:  # objが文字列以外の時
             self._ext_desc(obj)
+        self._removeBranch("&nbsp;")  # 不要な枝を削除。
         self.lst_output.append("</tt>")  # 等速フォントのタグを閉じる。
         from IPython.display import display, HTML  # IPython Notebook用
         display(HTML("<br/>".join(self.lst_output)))  # IPython Notebookに出力。
@@ -57,12 +59,34 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
             self._ext_desc_idl(obj)
         else:
             self._ext_desc(obj)
+        self._removeBranch("&nbsp;")  # 不要な枝を削除。
         self.lst_output = [i + "<br>" for i in self.lst_output]  # リストの各要素の最後に改行タグを追加する。
         self.lst_output.append("</tt></body></html>")  # 等速フォントのタグを閉じる。
         with open('workfile.html', 'w', encoding='UTF-8') as f:  # htmlファイルをUTF-8で作成。すでにあるときは上書き。
             f.writelines(self.lst_output)  # シークエンスデータをファイルに書き出し。
             import webbrowser
             webbrowser.open_new_tab(f.name)  # デフォルトのブラウザの新しいタブでhtmlファイルを開く。
+    def _removeBranch(self,s):  # 不要な枝を削除。引数は半角スペース。" "か"&nbsp;"
+        i = None;  # 縦棒の位置を初期化。    
+        n = len(self.lst_output)  # 出力行数を取得。
+        for j in reversed(range(n)):  # 出力行を下からみていく。
+            line = self.lst_output[j]  # 行の内容を取得。
+            if j == n - 1 :  # 最終行のとき
+                if "│" in line:  # 本来あってはならない縦棒があるとき。
+                    i = line.find("│")  # 縦棒の位置を取得。
+                    self._replaceBar(j, line, s*2) #  不要な縦棒を空白に置換。
+                else:
+                    break  # 最終行に縦棒がなければループを出る。
+            else:
+                if "│" in line[i]:  # 消去するべき縦棒があるとき
+                    self._replaceBar(j, line, s*2) #  不要な縦棒を空白に置換。
+                else:  # 縦棒が途切れたとき
+                    line = line.replace("├─","└─",1)  # 下向きの分岐を消す。
+                    self.lst_output[j] = line
+                    break
+    def _replaceBar(self, j, line, ss):  #  不要な縦棒を空白に置換。
+        line = line.replace("│",ss,1)
+        self.lst_output[j] = line
     def _init(self, lst_supr):  # 初期化関数。出力を抑制するインターフェイス名のリストを引数とする。
 #         self.st_omi = ST_OMI.copy()  # 結果を出力しないインターフェイス名の集合の初期化。
         self.lst_output = list()  # 出力行を収納するリストを初期化。
