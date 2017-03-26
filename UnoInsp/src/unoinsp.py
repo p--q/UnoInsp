@@ -62,7 +62,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         self._removeBranch("&nbsp;")  # 不要な枝を削除。
         self.lst_output = [i + "<br>" for i in self.lst_output]  # リストの各要素の最後に改行タグを追加する。
         self.lst_output.append("</tt></body></html>")  # 等速フォントのタグを閉じる。
-        with open('workfile.html', 'w', encoding='UTF-8') as f:  # htmlファイルをUTF-8で作成。すでにあるときは上書き。
+        with open('unoinsp_output.html', 'w', encoding='UTF-8') as f:  # htmlファイルをUTF-8で作成。すでにあるときは上書き。
             f.writelines(self.lst_output)  # シークエンスデータをファイルに書き出し。
             import webbrowser
             webbrowser.open_new_tab(f.name)  # デフォルトのブラウザの新しいタブでhtmlファイルを開く。
