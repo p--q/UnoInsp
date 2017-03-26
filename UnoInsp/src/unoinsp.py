@@ -85,10 +85,10 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         self._make_link("service", REG_IDL, item_with_branch)
     def _fn_i(self, item_with_branch):  # インターフェイス名にアンカータグをつける。
         self._make_link("interface", REG_I, item_with_branch)
-    def _make_link(self, type, regex, item_with_branch):
+    def _make_link(self, typ, regex, item_with_branch):
         idl = regex.findall(item_with_branch)  # 正規表現でIDL名を抽出する。
         if idl:
-            lnk = "<a href='" + self.prefix + type + "com_1_1sun_1_1star" + idl[0].replace(".", "_1_1") + ".html' target='_blank'>" + idl[0] + "</a>"  # サービス名のアンカータグを作成。
+            lnk = "<a href='" + self.prefix + typ + "com_1_1sun_1_1star" + idl[0].replace(".", "_1_1") + ".html' target='_blank'>" + idl[0] + "</a>"  # サービス名のアンカータグを作成。
             self.lst_output.append(item_with_branch.replace(" ", "&nbsp;").replace(idl[0], lnk))  # 半角スペースを置換後にサービス名をアンカータグに置換。
         else:
             self.lst_output.append(item_with_branch.replace(" ", "&nbsp;"))  # 半角スペースを置換。
@@ -106,8 +106,8 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         for i in idl:  # インターフェイス名と例外名以外について。
             item_with_branch = self._make_anchor("struct", i, item_with_branch)
         self.lst_output.append(item_with_branch)
-    def _make_anchor(self, type, i, item_with_branch):
-        lnk = "<a href='" + self.prefix + type + "com_1_1sun_1_1star" + i.replace(".", "_1_1") + ".html' target='_blank'　style='text-decoration:none;'>" + i + "</a>"  # 下線はつけない。
+    def _make_anchor(self, typ, i, item_with_branch):
+        lnk = "<a href='" + self.prefix + typ + "com_1_1sun_1_1star" + i.replace(".", "_1_1") + ".html' target='_blank'　style='text-decoration:none;'>" + i + "</a>"  # 下線はつけない。
         return item_with_branch.replace(i, lnk)
     def _ext_desc(self, obj, flag=False):  #  オブジェクトがサポートするIDLから末裔を抽出する。flagはオブジェクトが直接インターフェイスをもっているときにTrueになるフラグ。
         self.lst_output.append("pyuno object")  # treeの根に表示させるもの。
