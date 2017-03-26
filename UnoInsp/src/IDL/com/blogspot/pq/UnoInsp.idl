@@ -1,0 +1,17 @@
+#ifndef _com_blogspot_pq_UnoInsp_idl_
+#define _com_blogspot_pq_UnoInsp_idl_
+
+#include <com/blogspot/pq/XUnoInsp.idl>
+
+module com { module blogspot { module pq {
+
+
+service UnoInsp : XUnoInsp{
+
+  create( [in] boolean bOffline );
+		
+};
+
+};};};
+	
+#endif

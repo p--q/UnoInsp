@@ -1,0 +1,16 @@
+#ifndef _com_blogspot_pq_XUnoInsp_idl_
+#define _com_blogspot_pq_XUnoInsp_idl_
+
+module com { module blogspot { module pq {
+
+interface XUnoInsp {
+
+  void tree( [in] any aObject, [in] sequence< string > Idl );
+  void wtree( [in] any aObject, [in] sequence< string > Idl );
+  void itree( [in] any aObject, [in] sequence< string > Idl );
+
+};
+
+}; }; };
+
+#endif
