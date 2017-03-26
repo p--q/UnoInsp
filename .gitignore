@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 # C extensions
-*.so
+# *.so
 
 # Distribution / packaging
 .Python
@@ -46,7 +46,7 @@ coverage.xml
 .hypothesis/
 
 # Translations
-*.mo
+# *.mo
 *.pot
 
 # Django stuff:

@@ -8,7 +8,7 @@ def macro():
 #     ins.tree(zf,["core"])  # coreインテーフェイスを出力しない。
     ins.tree(zf)
 #     ins.wtree(zf)
-    
+#     ins.tree(zf,"core")
     
     
     
