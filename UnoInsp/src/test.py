@@ -5,11 +5,11 @@ def macro():
     zf = ctx.getServiceManager().createInstanceWithContext("com.sun.star.packages.zip.ZipFileAccess", ctx)
     import unoinsp
     ins = unoinsp.ObjInsp(XSCRIPTCONTEXT)
-    ins.tree(zf,("core"))  # coreインテーフェイスを出力しない。
-#     ins.tree(zf)
+#     ins.tree(zf,("core",))  # coreインターフェイスを出力しない。
+    ins.tree(zf)
 #     ins.wtree(zf)
-#     ins.tree(zf,"core")
-#     ins.wtree(zf,["core"])  # coreインテーフェイスを出力しない。
+#     ins.tree(zf,("core",))
+#     ins.wtree(zf,tuple(["core"]))  # coreインターフェイスを出力しない。
     
     
 if __name__ == "__main__":

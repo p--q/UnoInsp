@@ -30,8 +30,9 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         self.dic_fn = dict()  # 出力方法を決める関数を入れる辞書。
         self.prefix = "http://api.libreoffice.org/docs/idl/ref/" if not offline else "file://" + get_path(ctx) + "/sdk/docs/idl/ref/"  # offlineがTrueのときはローカルのAPIリファレンスへのリンクを張る。
         self.tdm = ctx.getByName('/singletons/com.sun.star.reflection.theTypeDescriptionManager')  # TypeDescriptionManagerをシングルトンでインスタンス化。
-    def tree(self, obj, lst_supr=None):  # 修飾無しでprint()で出力。PyCharmでの使用を想定。
-        self._init(list(lst_supr))  # 初期化関数
+    def tree(self, obj, lst_supr=None):  # 修飾無しでprint()で出力。lst_suprはタプル。
+        if isinstance(lst_supr,tuple):lst_supr = list(lst_supr)  # タプルならリストに変換。
+        self._init(lst_supr)  # 初期化関数
         self.dic_fn = dict(zip(LST_KEY, [self.lst_output.append for i in range(len(LST_KEY))]))  # すべてself.lst_output.appendする。
         if isinstance(obj, str): # objが文字列(IDL名)のとき
             self._ext_desc_idl(obj)
@@ -39,8 +40,9 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
             self._ext_desc(obj)
         self._removeBranch(" ")  # 不要な枝を削除。
         print("\n".join(self.lst_output))
-    def itree(self, obj, lst_supr=None):  # アンカータグをつけて出力。IPython Notebookでの使用を想定
-        self._init(list(lst_supr))  # 初期化関数
+    def itree(self, obj, lst_supr=None):  # アンカータグをつけて出力。IPython Notebookでの使用を想定。lst_suprはタプル。
+        if isinstance(lst_supr,tuple):lst_supr = list(lst_supr)  # タプルならリストに変換。
+        self._init(lst_supr)  # 初期化関数
         self._output_setting()  # IDL名にリンクをつけて出力するための設定。
         self.lst_output.append("<tt>")  # 等幅フォントのタグを指定。
         if isinstance(obj, str):  # objが文字列(IDL名)のとき
@@ -51,8 +53,9 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         self.lst_output.append("</tt>")  # 等速フォントのタグを閉じる。
         from IPython.display import display, HTML  # IPython Notebook用
         display(HTML("<br/>".join(self.lst_output)))  # IPython Notebookに出力。
-    def wtree(self, obj, lst_supr=None):  # ウェブブラウザの新たなタブに出力。マクロやPyCharmでの使用を想定。
-        self._init(list(lst_supr))  # 初期化関数
+    def wtree(self, obj, lst_supr=None):  # ウェブブラウザの新たなタブに出力。lst_suprはタプル。
+        if isinstance(lst_supr,tuple):lst_supr = list(lst_supr)  # タプルならリストに変換。
+        self._init(lst_supr)  # 初期化関数
         self._output_setting()  # IDL名にリンクをつけて出力するための設定。
         self.lst_output.append('<!DOCTYPE html><html><head><meta http-equiv="content-language" content="ja"><meta charset="UTF-8"></head><body><tt>')  # 出力行を収納するリストを初期化。等幅フォントのタグを指定。
         if isinstance(obj, str):  # objが文字列(IDL名)のとき
@@ -99,7 +102,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
 #                 self.st_omi = st_supr.symmetric_difference(ST_OMI)  # デフォルトでcoreインターフェースを出力しないとき。lst_suprとST_OMIに共通しない要素を取得。
                 self.st_omi = st_supr  # デフォルトですべて出力するとき。
             else:  # 引数がリスト以外のとき
-                self.lst_output.append(_("The second argument should be specified as a list of IDL interface names."))  # 第2引数はIDLインターフェイス名のリストで指定してください。
+                self.lst_output.append(_("The second argument should be specified as a tuple of IDL interface names."))  # 第2引数はIDLインターフェイス名のタプルで指定してください。
         self.stack = list()  # スタックを初期化。
     def _output_setting(self):  # IDL名にリンクをつけて出力するための設定。
         self.dic_fn = dict(zip(LST_KEY, [self._fn for i in range(len(LST_KEY))]))  # 一旦すべての値をself._fnにする。
