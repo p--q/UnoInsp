@@ -31,7 +31,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         self.prefix = "http://api.libreoffice.org/docs/idl/ref/" if not offline else "file://" + get_path(ctx) + "/sdk/docs/idl/ref/"  # offlineがTrueのときはローカルのAPIリファレンスへのリンクを張る。
         self.tdm = ctx.getByName('/singletons/com.sun.star.reflection.theTypeDescriptionManager')  # TypeDescriptionManagerをシングルトンでインスタンス化。
     def tree(self, obj, lst_supr=None):  # 修飾無しでprint()で出力。PyCharmでの使用を想定。
-        self._init(lst_supr)  # 初期化関数
+        self._init(list(lst_supr))  # 初期化関数
         self.dic_fn = dict(zip(LST_KEY, [self.lst_output.append for i in range(len(LST_KEY))]))  # すべてself.lst_output.appendする。
         if isinstance(obj, str): # objが文字列(IDL名)のとき
             self._ext_desc_idl(obj)
@@ -40,7 +40,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         self._removeBranch(" ")  # 不要な枝を削除。
         print("\n".join(self.lst_output))
     def itree(self, obj, lst_supr=None):  # アンカータグをつけて出力。IPython Notebookでの使用を想定
-        self._init(lst_supr)  # 初期化関数
+        self._init(list(lst_supr))  # 初期化関数
         self._output_setting()  # IDL名にリンクをつけて出力するための設定。
         self.lst_output.append("<tt>")  # 等幅フォントのタグを指定。
         if isinstance(obj, str):  # objが文字列(IDL名)のとき
@@ -52,7 +52,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
         from IPython.display import display, HTML  # IPython Notebook用
         display(HTML("<br/>".join(self.lst_output)))  # IPython Notebookに出力。
     def wtree(self, obj, lst_supr=None):  # ウェブブラウザの新たなタブに出力。マクロやPyCharmでの使用を想定。
-        self._init(lst_supr)  # 初期化関数
+        self._init(list(lst_supr))  # 初期化関数
         self._output_setting()  # IDL名にリンクをつけて出力するための設定。
         self.lst_output.append('<!DOCTYPE html><html><head><meta http-equiv="content-language" content="ja"><meta charset="UTF-8"></head><body><tt>')  # 出力行を収納するリストを初期化。等幅フォントのタグを指定。
         if isinstance(obj, str):  # objが文字列(IDL名)のとき
