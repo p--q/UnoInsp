@@ -94,6 +94,7 @@ class ObjInsp(unohelper.Base, XInterface):  # XSCRIPTCONTEXTを引数にして�
         self.lst_output[j] = line
     def _init(self, t_supr):  # 初期化関数。出力を抑制するインターフェイス名のリストを引数とする。
 #         self.st_omi = ST_OMI.copy()  # 結果を出力しないインターフェイス名の集合の初期化。
+        self.st_omi = set()  # 結果を出力しないインターフェイス名の集合の初期化。
         self.lst_output = list()  # 出力行を収納するリストを初期化。
         if t_supr:  # 第2引数があるとき
             if isinstance(t_supr, tuple):  # t_suprがタプルのとき
