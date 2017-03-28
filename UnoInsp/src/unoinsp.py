@@ -1,5 +1,6 @@
 #!/opt/libreoffice5.2/program/python
 # -*- coding: utf-8 -*-
+import unohelper
 import gettext
 import os
 import sys
@@ -13,17 +14,21 @@ t = gettext.translation("unoinsp",lodir,fallback=True)  # Translations インス
 _ = t.gettext  # _にt.gettext関数を代入。
 import re #正規表現モジュール。
 import platform  # OS名の取得に使用。
+
 from com.sun.star.uno.TypeClass import SERVICE, INTERFACE, PROPERTY, INTERFACE_METHOD, INTERFACE_ATTRIBUTE
 from com.sun.star.beans import PropertyValue
+from com.sun.star.uno import XInterface
 CSS = "com.sun.star"  # IDL名の先頭から省略する部分。
 REG_IDL = re.compile(r'(?<!\w)\.[\w\.]+')  # IDL名を抽出する正規表現オブジェクト。
 REG_I = re.compile(r'(?<!\w)\.[\w\.]+\.X[\w]+')  # インターフェイス名を抽出する正規表現オブジェクト。
 REG_E = re.compile(r'(?<!\w)\.[\w\.]+\.[\w]+Exception')  # 例外名を抽出する正規表現オブジェクト。
 ST_OMI = {'.uno.XInterface', '.lang.XTypeProvider', '.lang.XServiceInfo', '.uno.XWeak', '.lang.XComponent', '.lang.XInitialization', '.lang.XMain', '.uno.XAggregation', '.lang.XUnoTunnel'}  # 結果を出力しないインターフェイス名の集合の初期値。
 LST_KEY = ["SERVICE", "INTERFACE", "PROPERTY", "INTERFACE_METHOD", "INTERFACE_ATTRIBUTE"]  # dic_fnのキーのリスト。
-class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。第二引数をTrueにするとローカルのAPIリファレンスへのリンクになる。
-    def __init__(self, XSCRIPTCONTEXT, offline=False):
-        ctx = XSCRIPTCONTEXT.getComponentContext()  # コンポーネントコンテクストを取得。
+class ObjInsp(unohelper.Base, XInterface):  # XSCRIPTCONTEXTを引数にしてインスタンス化する。第二引数をTrueにするとローカルのAPIリファレンスへのリンクになる。
+#     def __init__(self, XSCRIPTCONTEXT, offline=False):
+    def __init__(self, ctx):
+        offline = False
+#         ctx = XSCRIPTCONTEXT.getComponentContext()  # コンポーネントコンテクストを取得。
         self.st_omi = set()  # 出力を抑制するインターフェイスの集合。
         self.stack = list()  # スタック。
         self.lst_output = list()  # 出力行を収納するリスト。
@@ -317,3 +322,6 @@ def get_path(ctx):  # LibreOfficeのインストールパスを得る。
     os = platform.system()  # OS名を得る。
     path = "/opt/" if os == "Linux" else ""  # LinuxのときのLibreOfficeのインストール先フォルダ。
     return path + o_name.lower() + o_setupversion
+
+g_ImplementationHelper = unohelper.ImplementationHelper()
+g_ImplementationHelper.addImplementation(ObjInsp,"pq.UnoInsp", ("pq.UnoInsp",),)
