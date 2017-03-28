@@ -6,10 +6,14 @@ def macro():
     import unoinsp
     ins = unoinsp.ObjInsp(XSCRIPTCONTEXT)
 #     ins.tree(zf,("core",))  # coreインターフェイスを出力しない。
-    ins.tree(zf)
+#     ins.tree(zf)
 #     ins.wtree(zf)
 #     ins.tree(zf,("core",))
 #     ins.wtree(zf,tuple(["core"]))  # coreインターフェイスを出力しない。
+    imp = ctx.getServiceManager().createInstanceWithContext("mytools.basicide.IATest", ctx)
+    ins.wtree(imp)
+
+
     
     
 if __name__ == "__main__":
