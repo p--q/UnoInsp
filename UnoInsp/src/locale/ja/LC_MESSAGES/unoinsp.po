@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unoinsp.py\n"
 "POT-Creation-Date: 2017-03-26 00:26+0900\n"
-"PO-Revision-Date: 2017-03-26 00:39+0900\n"
+"PO-Revision-Date: 2017-03-27 16:19+0900\n"
 "Last-Translator: \n"
 "Language-Team: p--q <pq.blogspot@gmail.com>\n"
 "Language: Japanese\n"
@@ -19,7 +19,7 @@ msgstr ""
 #: ../../../unoinsp.py:67
 msgid ""
 "The second argument should be specified as a list of IDL interface names."
-msgstr "第2引数はIDLインターフェイス名のリストで指定してください。"
+msgstr "第2引数はIDLインターフェイス名のタプルで指定してください。"
 
 #: ../../../unoinsp.py:126
 msgid "There is no service or interface to support."
