@@ -19,6 +19,7 @@ CSS = "com.sun.star"  # IDL名の先頭から省略する部分。
 REG_IDL = re.compile(r'(?<!\w)\.[\w\.]+')  # IDL名を抽出する正規表現オブジェクト。
 REG_I = re.compile(r'(?<!\w)\.[\w\.]+\.X[\w]+')  # インターフェイス名を抽出する正規表現オブジェクト。
 REG_E = re.compile(r'(?<!\w)\.[\w\.]+\.[\w]+Exception')  # 例外名を抽出する正規表現オブジェクト。
+REG_SQB = re.compile(r'\[\]')  # 型から角括弧ペアを取得する正規表現オブジェクト。
 ST_OMI = {'.uno.XInterface', '.lang.XTypeProvider', '.lang.XServiceInfo', '.uno.XWeak', '.lang.XComponent', '.lang.XInitialization', '.lang.XMain', '.uno.XAggregation', '.lang.XUnoTunnel'}  # 結果を出力しないインターフェイス名の集合の初期値。
 LST_KEY = ["SERVICE", "INTERFACE", "PROPERTY", "INTERFACE_METHOD", "INTERFACE_ATTRIBUTE"]  # dic_fnのキーのリスト。
 class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。第二引数をTrueにするとローカルのAPIリファレンスへのリンクになる。
@@ -212,8 +213,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                         typcls2 = self.stack[lst_level.index(level)].getTypeClass()  # スタックにある同じ階層のものの先頭の要素のTypeClassを取得。
                         if typcls2 == INTERFACE or typcls2 == SERVICE: branch[1] = "│   "  # サービスかインターフェイスのとき。横枝だったのを縦枝に書き換える。
                 if typcls == INTERFACE_METHOD:  # jがメソッドのとき。
-                    typ = j.ReturnType.Name.replace(CSS, "")  # 戻り値の型を取得。
-                    if typ[1] == "]": typ = typ.replace("]", "") + "]"  # 属性がシークエンスのとき[]の表記を修正。
+                    typ = self._format_type(j.ReturnType.Name.replace(CSS, ""))  # 戻り値の型を取得。
                     stack2 = list(j.Parameters)[::-1]  # メソッドの引数について逆順(降順ではない)にスタック2に取得。
                     if not stack2:  # 引数がないとき。
                         branch.append(typ.rjust(m) + "  " + j.MemberName.replace(CSS, "") + "()")  # 「戻り値の型(固定幅mで右寄せ) メソッド名()」をbranchの3番の要素に取得。
@@ -222,8 +222,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                         m3 = max([len(i.Type.Name.replace(CSS, "")) for i in stack2])  # 引数の型の最大文字数を取得。
                         k = stack2.pop()  # 先頭の引数を取得。
                         inout = inout_dic[(k.isIn(), k.isOut())]  # 引数の[in]の判定、[out]の判定
-                        typ2 = k.Type.Name.replace(CSS, "")  # 引数の型を取得。
-                        if typ2[1] == "]": typ2 = typ2.replace("]", "") + "]"  # 引数の型がシークエンスのとき[]の表記を修正。
+                        typ2 = self._format_type(k.Type.Name.replace(CSS, ""))  # 戻り値の型を取得。
                         branch.append(typ.rjust(m) + "  " + j.MemberName.replace(CSS, "") + "( " + inout + " " + typ2.rjust(m3) + " " + k.Name.replace(CSS, ""))  # 「戻り値の型(固定幅で右寄せ)  メソッド名(inout判定　引数の型(固定幅m3で左寄せ) 引数名」をbranchの3番の要素に取得。
                         m2 = len(typ.rjust(m) + "  " + j.MemberName.replace(CSS, "") + "( ")  # メソッドの引数の部分をインデントする文字数を取得。
                         if stack2:  # 引数が複数あるとき。
@@ -233,8 +232,7 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                             while stack2:  # 1番以降の引数があるとき。
                                 k = stack2.pop()
                                 inout = inout_dic[(k.isIn(), k.isOut())]  # 引数の[in]の判定、[out]の判定
-                                typ2 = k.Type.Name.replace(CSS, "")  # 引数の型を取得。
-                                if typ2[1] == "]": typ2 = typ2.replace("]", "") + "]"  # 引数の型がシークエンスのとき[]の表記を修正。
+                                typ2 = self._format_type(k.Type.Name.replace(CSS, ""))  # 戻り値の型を取得。
                                 branch.append(" ".rjust(m2) + inout + " " + typ2.rjust(m3) + " " + k.Name.replace(CSS, ""))  # 「戻り値の型とメソッド名の固定幅m2 引数の型(固定幅m3で左寄せ) 引数名」をbranchの2番の要素に取得。
                                 if stack2:  # 最後の引数でないとき。
                                     branch.append(",")  # branchの3番の要素に「,」を取得。
@@ -270,13 +268,11 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                         t_md = j.getMembers()  # インターフェイス属性とメソッドのTypeDescriptionオブジェクトを取得。
                         self.dic_fn["INTERFACE"]("".join(branch))  # 枝をつけて出力。
                     elif typcls == PROPERTY:  # サービス属性のとき。
-                        typ = j.getPropertyTypeDescription().Name.replace(CSS, "")  # 属性の型
-                        if typ[1] == "]": typ = typ.replace("]", "") + "]"  # 属性がシークエンスのとき[]の表記を修正。
+                        typ = self._format_type(j.getPropertyTypeDescription().Name.replace(CSS, ""))  # 属性の型を取得。
                         branch.append(typ.rjust(m) + "  " + j.Name.replace(CSS, ""))  # 型は最大文字数で右寄せにする。
                         self.dic_fn["PROPERTY"]("".join(branch))  # 枝をつけて出力。
                     elif typcls == INTERFACE_ATTRIBUTE:  # インターフェイス属性のとき。
-                        typ = j.Type.Name.replace(CSS, "")  # 戻り値の型
-                        if typ[1] == "]": typ = typ.replace("]", "") + "]"  # 属性がシークエンスのとき[]の表記を修正。
+                        typ = self._format_type(j.Type.Name.replace(CSS, ""))  # 戻り値の型を取得。
                         branch.append(typ.rjust(m) + "  " + j.MemberName.replace(CSS, ""))  # 型は最大文字数で右寄せにする。
                         self.dic_fn["INTERFACE_METHOD"]("".join(branch))  # 枝をつけて出力。
                     elif typcls == SERVICE:  # jがサービスのときtdはXServiceTypeDescriptionインターフェイスをもつ。
@@ -307,6 +303,11 @@ class ObjInsp:  # XSCRIPTCONTEXTを引数にしてインスタンス化する。
                     lst_level.extend([level + 1 for i in t_spd])  # 階層を取得。
                     m = max([len(i.getPropertyTypeDescription().Name.replace(CSS, "")) for i in t_spd])  # サービス属性の型のうち最大文字数を取得。
                     t_spd = tuple()  # サービス属性のTypeDescriptionオブジェクトの入れ物を初期化。
+    def _format_type(self,typ):  # 属性がシークエンスのとき[]の表記を修正。
+        lst_sqb = REG_SQB.findall(typ)  # 角括弧のペアのリストを取得。
+        for s in lst_sqb:  # 角括弧の数だけ繰り返し。
+            typ = typ.replace("]", "",1) + "]" 
+        return typ
 def get_path(ctx):  # LibreOfficeのインストールパスを得る。
     cp = ctx.getServiceManager().createInstanceWithContext('com.sun.star.configuration.ConfigurationProvider', ctx)
     node = PropertyValue()

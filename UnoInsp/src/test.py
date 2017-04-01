@@ -10,9 +10,10 @@ def macro():
 #     ins.wtree(zf)
 #     ins.tree(zf,("core",))
 #     ins.wtree(zf,tuple(["core"]))  # coreインターフェイスを出力しない。
-    imp = ctx.getServiceManager().createInstanceWithContext("mytools.basicide.IATest", ctx)
-    ins.wtree(imp)
-
+#     imp = ctx.getServiceManager().createInstanceWithContext("mytools.basicide.IATest", ctx)
+#     ins.wtree(imp)
+    obj = ctx.getServiceManager().createInstanceWithContext("com.sun.star.task.Job", ctx)
+    ins.tree(obj)
 
     
     
