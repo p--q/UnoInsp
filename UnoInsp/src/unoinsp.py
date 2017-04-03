@@ -34,7 +34,7 @@ class ObjInsp(unohelper.Base, XInterface):  # XSCRIPTCONTEXTを引数にして�
         self.stack = list()  # スタック。
         self.lst_output = list()  # 出力行を収納するリスト。
         self.dic_fn = dict()  # 出力方法を決める関数を入れる辞書。
-        self.prefix = "http://api.libreoffice.org/docs/idl/ref/" if not offline else "file://" + get_path(ctx) + "/sdk/docs/idl/ref/"  # offlineがTrueのときはローカルのAPIリファレンスへのリンクを張る。
+        self.prefix = "http://api.libreoffice.org/docs/idl/ref/" if not offline else "file://" + os.path.dirname(os.environ["UNO_PATH"]) + "/sdk/docs/idl/ref/"  # offlineがTrueのときはローカルのAPIリファレンスへのリンクを張る。
         self.tdm = ctx.getByName('/singletons/com.sun.star.reflection.theTypeDescriptionManager')  # TypeDescriptionManagerをシングルトンでインスタンス化。
     def tree(self, obj, t_supr=None):  # 修飾無しでprint()で出力。t_suprはタプル。
         self._init(t_supr)  # 初期化関数
@@ -313,17 +313,17 @@ class ObjInsp(unohelper.Base, XInterface):  # XSCRIPTCONTEXTを引数にして�
         for s in lst_sqb:  # 角括弧の数だけ繰り返し。
             typ = typ.replace("]", "",1) + "]" 
         return typ
-def get_path(ctx):  # LibreOfficeのインストールパスを得る。
-    cp = ctx.getServiceManager().createInstanceWithContext('com.sun.star.configuration.ConfigurationProvider', ctx)
-    node = PropertyValue()
-    node.Name = 'nodepath'
-    node.Value = 'org.openoffice.Setup/Product'  # share/registry/main.xcd内のノードパス。
-    ca = cp.createInstanceWithArguments('com.sun.star.configuration.ConfigurationAccess', (node,))
-    o_name = ca.getPropertyValue('ooName')  # ooNameプロパティからLibreOfficeの名前を得る。
-    o_setupversion = ca.getPropertyValue('ooSetupVersion')  # ooSetupVersionからLibreOfficeのメジャーバージョンとマイナーバージョンの番号を得る。
-    os = platform.system()  # OS名を得る。
-    path = "/opt/" if os == "Linux" else ""  # LinuxのときのLibreOfficeのインストール先フォルダ。
-    return path + o_name.lower() + o_setupversion
+# def get_path(ctx):  # LibreOfficeのインストールパスを得る。
+#     cp = ctx.getServiceManager().createInstanceWithContext('com.sun.star.configuration.ConfigurationProvider', ctx)
+#     node = PropertyValue()
+#     node.Name = 'nodepath'
+#     node.Value = 'org.openoffice.Setup/Product'  # share/registry/main.xcd内のノードパス。
+#     ca = cp.createInstanceWithArguments('com.sun.star.configuration.ConfigurationAccess', (node,))
+#     o_name = ca.getPropertyValue('ooName')  # ooNameプロパティからLibreOfficeの名前を得る。
+#     o_setupversion = ca.getPropertyValue('ooSetupVersion')  # ooSetupVersionからLibreOfficeのメジャーバージョンとマイナーバージョンの番号を得る。
+#     os = platform.system()  # OS名を得る。
+#     path = "/opt/" if os == "Linux" else ""  # LinuxのときのLibreOfficeのインストール先フォルダ。
+#     return path + o_name.lower() + o_setupversion
 
 g_ImplementationHelper = unohelper.ImplementationHelper()
 g_ImplementationHelper.addImplementation(ObjInsp,"pq.UnoInsp", ("pq.UnoInsp",),)
